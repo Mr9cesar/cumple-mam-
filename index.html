@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feliz cumpleaños, Mamá · El tráiler</title>
+<style>
+:root{--gold:#f2c46d;--ink:#f5efe6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:#000;color:var(--ink);font-family:Georgia,'Times New Roman',serif;overflow:hidden}
+#gate,#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;text-align:center}
+#gate{z-index:20;flex-direction:column;background:#000;cursor:pointer;letter-spacing:.3em;text-transform:uppercase}
+#gate b{font-size:3.5rem;display:block;margin-bottom:14px;letter-spacing:0}
+.bar{position:fixed;left:0;right:0;height:9vh;background:#000;z-index:10}
+.bar.t{top:0}.bar.b{bottom:0}
+.vig{position:fixed;inset:0;z-index:9;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.75))}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;z-index:15;pointer-events:none}
+.sc{position:absolute;width:100%;padding:0 24px;animation:in 1.4s both}
+.sc.out{animation:out .7s both}
+.sm{font-size:clamp(1.1rem,4.5vw,1.8rem);letter-spacing:.25em;text-transform:uppercase;line-height:1.8}
+.big{font-size:clamp(2.2rem,10vw,4.6rem);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);text-shadow:0 0 30px rgba(242,196,109,.6);line-height:1.2}
+.big.zoom{animation:zoom 4s both}
+.frame{width:min(68vw,300px);aspect-ratio:3/4;object-fit:cover;border:3px solid var(--gold);box-shadow:0 0 50px rgba(242,196,109,.35);margin:0 auto 18px;display:block}
+.ph{display:flex;align-items:center;justify-content:center;background:#1a1410;font-size:1rem;color:var(--gold);line-height:2}
+.cr{font-size:clamp(.95rem,3.6vw,1.2rem);letter-spacing:.15em;line-height:2.2;text-transform:uppercase}
+.cr span{color:var(--gold);display:block;font-size:.8em;opacity:.8}
+.letter{font-size:clamp(1.05rem,4.2vw,1.5rem);line-height:1.9;font-style:italic;max-width:560px;margin:0 auto;text-align:left;white-space:pre-line}
+#snd{position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:12px;z-index:30;background:none;border:0;color:var(--ink);font-size:1.4rem;cursor:pointer;opacity:.7}
+button.re{font:inherit;margin-top:28px;padding:12px 28px;background:none;border:1px solid var(--gold);color:var(--gold);letter-spacing:.2em;text-transform:uppercase;cursor:pointer}
+@keyframes in{from{opacity:0;transform:scale(1.04);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes out{to{opacity:0;filter:blur(6px)}}
+@keyframes zoom{from{transform:scale(.85);opacity:0}15%{opacity:1}to{transform:scale(1.08);opacity:1}}
+</style>
+</head>
+<body>
+<div id="gate"><b>🎬</b>Toca para ver el tráiler<small style="letter-spacing:.1em;opacity:.6;margin-top:10px;text-transform:none">(sube el volumen 🔊)</small></div>
+<button id="snd" style="display:none">🔊</button>
+<div class="bar t"></div><div class="bar b"></div><div class="vig"></div><div id="flash"></div>
+<div id="stage"></div>
+<script>
+// ✏️ PERSONALIZA AQUÍ
+var NOMBRE="Mamá";
+var HIJO="Jean";
+var FOTO1="imagenes/foto1.jpeg";   // foto del "póster"
+var MUSICA="musica/cancion.mp3";   // canción (si no existe, suena música de suspenso)
+var song;
+var FOTO2="imagenes/foto2.jpeg";   // foto del final
+var CARTA="Mamá:\nNo tengo mucho dinero, pero tengo algo que vale más: todo lo que soy te lo debo a ti. Gracias por cuidarme, por aguantarme, por creer en mí hasta cuando yo dudaba. Sé que no siempre lo digo, pero te admiro y te quiero con todo mi corazón.\nFeliz cumpleaños.\n\nTu hijo, "+HIJO;   // ✏️ cámbiala por tus propias palabras
+
+var $=function(i){return document.getElementById(i)},sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+var AC,M,beat,LP;
+function audio(){
+  AC=new(window.AudioContext||window.webkitAudioContext)();M=AC.createGain();M.gain.value=.55;M.connect(AC.destination);
+  LP=AC.createBiquadFilter();LP.type='lowpass';LP.frequency.value=220;LP.connect(M);
+  [55,82.4,110.3].forEach(function(f,i){var o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(LP);o.start()});
+  beat=setInterval(function(){thump(0);setTimeout(function(){thump(.12)},280)},1100);
+}
+function thump(d){var t=AC.currentTime+d,o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(90,t);o.frequency.exponentialRampToValueAtTime(40,t+.25);g.gain.setValueAtTime(.7,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g);g.connect(M);o.start(t);o.stop(t+.4)}
+function rise(sec){if(!AC)return;var t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(900,t+sec);g.gain.setValueAtTime(.001,t);g.gain.linearRampToValueAtTime(.14,t+sec);g.gain.linearRampToValueAtTime(0,t+sec+.1);o.connect(g);g.connect(M);o.start(t);o.stop(t+sec+.2);LP.frequency.linearRampToValueAtTime(1800,t+sec)}
+function boom(){flash();if(!AC)return;var t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(70,t);o.frequency.exponentialRampToValueAtTime(28,t+2);g.gain.setValueAtTime(1,t);g.gain.exponentialRampToValueAtTime(.001,t+2.5);o.connect(g);g.connect(M);o.start(t);o.stop(t+2.6);
+  [261.6,329.6,392,523.3].forEach(function(f){var q=AC.createOscillator(),h=AC.createGain();q.type='triangle';q.frequency.value=f;h.gain.setValueAtTime(.001,t);h.gain.linearRampToValueAtTime(.12,t+.1);h.gain.exponentialRampToValueAtTime(.001,t+6);q.connect(h);h.connect(M);q.start(t);q.stop(t+6.2)});
+  LP.frequency.linearRampToValueAtTime(260,t+4);
+  }
+function flash(){var f=$('flash');f.style.transition='none';f.style.opacity=.9;setTimeout(function(){f.style.transition='opacity 1.2s';f.style.opacity=0},40)}
+
+var S=$('stage');
+async function scene(html,ms){S.innerHTML='<div class="sc">'+html+'</div>';await sleep(ms);var c=S.firstChild;if(c)c.classList.add('out');await sleep(700)}
+function phf(e){e.outerHTML='<div class="frame ph">📷<br>Falta la foto</div>'}
+function pic(src){return src?'<img class="frame" src="'+src+'" alt="" onerror="phf(this)">':'<div class="frame ph">📷<br>Aquí va<br>tu foto</div>'}
+
+async function carta(){S.innerHTML='<div class="sc"><div class="letter" id="lt"></div></div>';var el=$('lt');for(var i=0;i<CARTA.length;i++){el.textContent+=CARTA[i];await sleep(CARTA[i]=='\n'?400:50)}await sleep(4000);S.firstChild.classList.add('out');await sleep(700)}
+async function play(){
+  await sleep(1500);
+  await scene('<div class="sm">Hay historias<br>que empiezan en silencio…</div>',4200);
+  await scene('<div class="sm">Sin grandes presupuestos.<br>Sin efectos especiales.</div>',4200);
+  await scene('<div class="sm" style="color:var(--gold)">Pero con una protagonista<br>inolvidable.</div>',4200);
+  rise(4.5);
+  await scene(pic(FOTO1)+'<div class="sm">Una mujer.</div>',3200);
+  await scene('<div class="sm">Una familia entera<br>en sus hombros.</div>',3400);
+  await scene('<div class="sm">Mil batallas.<br>Ninguna sola.</div>',3400);
+  await scene('<div class="sm">Este 11 de noviembre…</div>',2600);
+  boom();
+  await scene('<div class="big zoom">Feliz<br>cumpleaños<br>'+NOMBRE+'</div>',5200);
+  await scene(pic(FOTO2)+'<div class="sm" style="font-size:clamp(1rem,4vw,1.5rem)">Gracias por cada día.<br>Te quiero muchísimo. 💛</div>',5000);
+  await carta();
+  var cr='<div class="cr">'+
+    '<span>Protagonizada por</span>'+NOMBRE+'<br>'+
+    '<span>Dirigida por</span>La vida<br>'+
+    '<span>Con la participación especial de</span>'+HIJO+', tu hijo<br>'+
+    '<span>Efectos especiales</span>Tu amor<br>'+
+    '<span>Presupuesto</span>$0 · Cariño: infinito</div>';
+  await scene(cr,7500);
+  S.innerHTML='<div class="sc"><div class="big" style="font-size:clamp(2rem,8vw,3.4rem)">Fin… 💛<br><small style="font-size:.4em;letter-spacing:.2em;color:var(--ink)">(o más bien, continuará)</small></div><button class="re" id="re">▶ Ver otra vez</button></div>';
+  $('re').onclick=function(){location.reload()};
+  clearInterval(beat);if(M)M.gain.linearRampToValueAtTime(.12,AC.currentTime+3);
+}
+$('gate').onclick=function(){
+  if(MUSICA){song=new Audio(MUSICA);song.loop=true;song.volume=.85;song.onerror=function(){song=null;try{audio();AC.resume()}catch(e){}};song.play().catch(function(){})}else{try{audio();AC.resume()}catch(e){}}
+  this.style.transition='opacity 1s';this.style.opacity=0;var g=this;setTimeout(function(){g.remove()},1000);
+  $('snd').style.display='block';play();
+};
+$('snd').onclick=function(){var on;if(song){on=!song.muted;song.muted=on}else if(M){on=M.gain.value>0;M.gain.value=on?0:.55}else return;this.textContent=on?'🔇':'🔊'};
+</script>
+</body>
+</html>
